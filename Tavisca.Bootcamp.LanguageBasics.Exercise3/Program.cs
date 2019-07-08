@@ -32,7 +32,6 @@ namespace Tavisca.Bootcamp.LanguageBasics.Exercise1
         private static void Test(int[] protein, int[] carbs, int[] fat, string[] dietPlans, int[] expected)
         {
             var result = SelectMeals(protein, carbs, fat, dietPlans).SequenceEqual(expected) ? "PASS" : "FAIL";
-            //Console.Write($"Expected = [{string.Join(", ", expected)}]\n");
             Console.WriteLine($"Proteins = [{string.Join(", ", protein)}]");
             Console.WriteLine($"Carbs = [{string.Join(", ", carbs)}]");
             Console.WriteLine($"Fats = [{string.Join(", ", fat)}]");
@@ -43,98 +42,90 @@ namespace Tavisca.Bootcamp.LanguageBasics.Exercise1
 
         public static int[] SelectMeals(int[] protein, int[] carbs, int[] fat, string[] dietPlans)
         {
-            // Add your code here.
-            //throw new NotImplementedException();
-            
+                      
             int[] calorie = new int[protein.Length];
-            for(int i = 0; i < protein.Length; i++)
+            for(int index = 0; index < protein.Length; index++)
             {
-                calorie[i] = fat[i] * 9 + protein[i] * 5 + carbs[i] * 5;
+                calorie[index] = fat[index] * 9 + protein[index] * 5 + carbs[index] * 5;
 
             }
-            //Console.Write($"Calorie = [{string.Join(", ", calorie)}]\n");
-            int[] exp = new int[dietPlans.Length];
-            for(int i = 0; i < dietPlans.Length; i++)
+            int[] results = new int[dietPlans.Length];
+            for(int index = 0; index < dietPlans.Length; index++)
             {
-                List<int> allowed = new List<Int32>();
-                char[] plans = dietPlans[i].ToCharArray();
+                List<int> allowedItems = new List<Int32>();
+                char[] plans = dietPlans[index].ToCharArray();
                 for (int k = 0; k < protein.Length; k++)
                 {
-                    allowed.Add(k);
+                    allowedItems.Add(k);
 
                 }
-                for (int j = 0; j < plans.Length; j++)
+                for (int secondIndex = 0; secondIndex < plans.Length; secondIndex++)
                 {
-                    if (plans[j].Equals('P'))
+                    int min, max;
+                    switch (plans[secondIndex])
                     {
-                        int max = getValue(protein, allowed);
-                        allowed = getAllowed(protein, allowed, max);
-                        
+                        case 'P':
+                            max = GetValue(protein, allowedItems);
+                            allowedItems = GetAllowedItems(protein, allowedItems, max);
+                            break;
+                        case 'p':
+                            min = GetValue(protein, allowedItems, "min");
+                            allowedItems = GetAllowedItems(protein, allowedItems, min);
+                            break;
+                        case 'C':
+                            max = GetValue(carbs, allowedItems);
+                            allowedItems = GetAllowedItems(carbs, allowedItems, max);
+                            break;
+                        case 'c':
+                            min = GetValue(carbs, allowedItems, "min");
+                            allowedItems = GetAllowedItems(carbs, allowedItems, min);
+                            break;
+                        case 'F':
+                            max = GetValue(fat, allowedItems);
+                            allowedItems = GetAllowedItems(fat, allowedItems, max);
+                            break;
+                        case 'f':
+                            min = GetValue(fat, allowedItems, "min");
+                            allowedItems = GetAllowedItems(fat, allowedItems, min);
+                            break;
+                        case 'T':
+                            max = GetValue(calorie, allowedItems);
+                            allowedItems = GetAllowedItems(calorie, allowedItems, max);
+                            break;
+                        case 't':
+                            min = GetValue(calorie, allowedItems, "min");
+                            allowedItems = GetAllowedItems(calorie, allowedItems, min);
+                            break;
                     }
-                    else if (plans[j].Equals('p'))
-                    {
-                        int min = getValue(protein, allowed,"min");
-                        allowed = getAllowed(protein, allowed, min);
-                    }
-                    else if (plans[j].Equals('C'))
-                    {
-                        int max = getValue(carbs, allowed);
-                        allowed = getAllowed(carbs, allowed, max);
-                    }
-                    else if (plans[j].Equals('c'))
-                    {
-                        int min = getValue(carbs, allowed,"min");
-                        allowed = getAllowed(carbs, allowed,min);
-                    }
-                    else if (plans[j].Equals('F'))
-                    {
-                        int max = getValue(fat, allowed);
-                        allowed = getAllowed(fat, allowed, max);
-                    }
-                    else if (plans[j].Equals('f'))
-                    {
-                        int min = getValue(fat, allowed,"min");
-                        allowed = getAllowed(fat, allowed, min);
-                    }
-                    else if (plans[j].Equals('T'))
-                    {
-                        int max = getValue(calorie, allowed);
-                        allowed = getAllowed(calorie, allowed, max);
-                    }
-                    else if (plans[j].Equals('t'))
-                    {
-                        int min = getValue(calorie, allowed,"min");
-                        allowed = getAllowed(calorie, allowed, min);
-                    }
+                  
                 }
-                exp[i] = allowed[0];
+                results[index] = allowedItems[0];
             }
-            //Console.Write($"Result = [{string.Join(", ", exp)}]\n");
-            return exp;
+            return results;
         }
 
-        public static int getValue(int[] arr,List<int> allowed,string op = "max")
+        public static int GetValue(int[] arr,List<int> allowedItems,string op = "max")
         {
             int min = int.MaxValue;
             int max = int.MinValue;
             if (op.Equals("max"))
             {
-                for(int i = 0; i < allowed.Count; i++)
+                for(int index = 0; index < allowedItems.Count; index++)
                 {
-                    if (max < arr[allowed[i]])
+                    if (max < arr[allowedItems[index]])
                     {
-                        max = arr[allowed[i]];
+                        max = arr[allowedItems[index]];
                     }
                 }
                 return max;
             }
             else
             {
-                for (int i = 0; i < allowed.Count; i++)
+                for (int index = 0; index < allowedItems.Count; index++)
                 {
-                    if (min > arr[allowed[i]])
+                    if (min > arr[allowedItems[index]])
                     {
-                        min = arr[allowed[i]];
+                        min = arr[allowedItems[index]];
                     }
                 }
                 return min;
@@ -142,14 +133,14 @@ namespace Tavisca.Bootcamp.LanguageBasics.Exercise1
             
         }
 
-        public static List<int> getAllowed(int[] arr,List<int> allowed,int val)
+        public static List<int> GetAllowedItems(int[] arr,List<int> allowedItems,int val)
         {
             List<int> tempAllowed = new List<int>();
-            for(int i = 0; i < allowed.Count; i++)
+            for(int index = 0; index < allowedItems.Count; index++)
             {
-                if (arr[allowed[i]] == val)
+                if (arr[allowedItems[index]] == val)
                 {
-                    tempAllowed.Add(allowed[i]);
+                    tempAllowed.Add(allowedItems[index]);
                 }
             }
             return tempAllowed;
